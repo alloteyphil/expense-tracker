@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Expense Tracker + Analytics Dashboard
 
-## Getting Started
+Starter app using:
+- Next.js App Router
+- Tailwind CSS
+- Clerk authentication
+- Convex backend
 
-First, run the development server:
+## Project Docs
+- Docs index: `docs/README.md`
+- PRD: `docs/PRD.md`
+- Stack + setup guide: `docs/STACK_AND_SETUP.md`
+- Architecture: `docs/ARCHITECTURE.md`
+- Backend contract: `docs/BACKEND_CONTRACT.md`
+- Roadmap: `docs/ROADMAP.md`
+- Contributing guide: `docs/CONTRIBUTING.md`
 
+## Local Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Add Clerk variables to `.env.local`:
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Then configure Clerk issuer domain in `convex/auth.config.ts`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Start Convex:
+```bash
+npx convex dev
+```
 
-## Learn More
+4. Start Next.js:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Open:
+- [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Current Features
+- Clerk sign-in/sign-up integration
+- Convex-backed user bootstrap
+- Create/list/delete expenses
+- Monthly analytics summary cards

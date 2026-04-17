@@ -3,3 +3,12 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+## Project Context Files
+
+Before making substantial changes, review:
+- `docs/README.md`
+- `docs/PRD.md`
+- `docs/ARCHITECTURE.md`
+- `docs/BACKEND_CONTRACT.md`
+- `docs/ROADMAP.md`
