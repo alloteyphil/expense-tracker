@@ -1,18 +1,7 @@
 export type TransactionType = "income" | "expense"
 
 export type CategoryId =
-  | "food"
-  | "transport"
-  | "rent"
-  | "utilities"
-  | "shopping"
-  | "entertainment"
-  | "health"
-  | "education"
-  | "salary"
-  | "freelance"
-  | "gifts"
-  | "other"
+  string
 
 export interface Category {
   id: CategoryId

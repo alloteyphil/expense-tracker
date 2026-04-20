@@ -29,12 +29,12 @@ import {
 } from "@/components/ui/empty"
 import { cn } from "@/lib/utils"
 import { formatDateShort, formatGHS } from "@/lib/format"
-import { CATEGORIES, CATEGORY_MAP } from "@/lib/mock-data"
-import type { Transaction, TransactionType } from "@/lib/types"
+import type { Category, Transaction, TransactionType } from "@/lib/types"
 
 const PAGE_SIZE = 8
 
 interface TransactionsListProps {
+  categories: Category[]
   transactions: Transaction[]
   /** Global search query (from header). */
   globalSearch?: string
@@ -43,11 +43,16 @@ interface TransactionsListProps {
 }
 
 export function TransactionsList({
+  categories,
   transactions,
   globalSearch = "",
   onDelete,
   onAddFirst,
 }: TransactionsListProps) {
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((category) => [category.id, category])),
+    [categories],
+  )
   const [localSearch, setLocalSearch] = useState("")
   const [type, setType] = useState<TransactionType | "all">("all")
   const [category, setCategory] = useState<string>("all")
@@ -61,13 +66,13 @@ export function TransactionsList({
       if (type !== "all" && t.type !== type) return false
       if (category !== "all" && t.categoryId !== category) return false
       if (query) {
-        const cat = CATEGORY_MAP[t.categoryId]?.label.toLowerCase() ?? ""
+        const cat = categoryMap[t.categoryId]?.label.toLowerCase() ?? ""
         const hay = `${t.note ?? ""} ${cat} ${t.amount}`.toLowerCase()
         if (!hay.includes(query)) return false
       }
       return true
     })
-  }, [transactions, type, category, query])
+  }, [transactions, type, category, query, categoryMap])
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const currentPage = Math.min(page, pageCount)
@@ -88,13 +93,13 @@ export function TransactionsList({
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="flex items-center gap-1 text-muted-foreground">
               <Filter className="size-4" aria-hidden="true" />
               <span className="text-sm">Filter</span>
             </div>
             <Select value={type} onValueChange={(v) => { setType(v as TransactionType | "all"); setPage(1) }}>
-              <SelectTrigger size="sm" className="w-32" aria-label="Filter by type">
+              <SelectTrigger size="sm" className="w-full sm:w-32" aria-label="Filter by type">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -104,12 +109,12 @@ export function TransactionsList({
               </SelectContent>
             </Select>
             <Select value={category} onValueChange={(v) => { setCategory(v); setPage(1) }}>
-              <SelectTrigger size="sm" className="w-44" aria-label="Filter by category">
+              <SelectTrigger size="sm" className="w-full sm:w-44" aria-label="Filter by category">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All categories</SelectItem>
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.label}
                   </SelectItem>
@@ -121,7 +126,7 @@ export function TransactionsList({
               value={localSearch}
               onChange={(e) => { setLocalSearch(e.target.value); setPage(1) }}
               placeholder="Search notes…"
-              className="h-8 flex-1 min-w-40 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
+              className="h-8 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50 sm:min-w-40 sm:flex-1"
               aria-label="Search transaction notes"
             />
           </div>
@@ -164,7 +169,7 @@ export function TransactionsList({
                   </TableHeader>
                   <TableBody>
                     {pageItems.map((t) => {
-                      const cat = CATEGORY_MAP[t.categoryId]
+                      const cat = categoryMap[t.categoryId]
                       const isIncome = t.type === "income"
                       return (
                         <TableRow key={t.id}>
@@ -237,7 +242,7 @@ export function TransactionsList({
               {/* Card list view (<sm) */}
               <ul className="divide-y divide-border sm:hidden">
                 {pageItems.map((t) => {
-                  const cat = CATEGORY_MAP[t.categoryId]
+                  const cat = categoryMap[t.categoryId]
                   const isIncome = t.type === "income"
                   return (
                     <li key={t.id} className="flex items-center gap-3 px-4 py-3">
@@ -282,7 +287,7 @@ export function TransactionsList({
               </ul>
 
               {/* Pagination */}
-              <div className="flex items-center justify-between border-t border-border px-4 py-3 sm:px-6">
+              <div className="flex flex-col gap-2 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <p className="text-xs text-muted-foreground">
                   Page {currentPage} of {pageCount}
                 </p>
@@ -315,6 +320,7 @@ export function TransactionsList({
       </Card>
 
       <DeleteTransactionDialog
+        categories={categories}
         transaction={pendingDelete}
         onOpenChange={(open) => !open && setPendingDelete(null)}
         onConfirm={() => {
@@ -340,15 +346,18 @@ import {
 } from "@/components/ui/alert-dialog"
 
 function DeleteTransactionDialog({
+  categories,
   transaction,
   onOpenChange,
   onConfirm,
 }: {
+  categories: Category[]
   transaction: Transaction | null
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
 }) {
-  const cat = transaction ? CATEGORY_MAP[transaction.categoryId] : null
+  const categoryMap = Object.fromEntries(categories.map((category) => [category.id, category]))
+  const cat = transaction ? categoryMap[transaction.categoryId] : null
   return (
     <AlertDialog open={!!transaction} onOpenChange={onOpenChange}>
       <AlertDialogContent>

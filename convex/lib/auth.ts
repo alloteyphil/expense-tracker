@@ -1,7 +1,8 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
-import { Doc } from "../_generated/dataModel";
+import { Doc, Id } from "../_generated/dataModel";
 
 type Ctx = QueryCtx | MutationCtx;
+type UserRole = "owner" | "admin" | "member";
 
 export async function requireUserIdentity(ctx: Ctx) {
   const identity = await ctx.auth.getUserIdentity();
@@ -23,4 +24,21 @@ export async function getCurrentUser(ctx: Ctx): Promise<Doc<"users">> {
   }
 
   return user;
+}
+
+export function assertRole(user: Doc<"users">, allowed: UserRole[]) {
+  const role = user.role ?? "owner";
+  if (!allowed.includes(role)) {
+    throw new Error("Unauthorized");
+  }
+}
+
+export function assertOwnership(
+  userId: Id<"users">,
+  resourceUserId: Id<"users">,
+  message = "Unauthorized",
+) {
+  if (userId !== resourceUserId) {
+    throw new Error(message);
+  }
 }

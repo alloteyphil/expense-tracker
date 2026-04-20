@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
-import { CATEGORIES } from "@/lib/mock-data"
-import type { CategoryId, DateRangeId, QuickFilters, TransactionType } from "@/lib/types"
+import type { Category, CategoryId, DateRangeId, QuickFilters, TransactionType } from "@/lib/types"
 
 interface QuickFiltersCardProps {
+  categories: Category[]
   filters: QuickFilters
   onChange: (f: QuickFilters) => void
 }
@@ -26,18 +26,18 @@ const RANGES: { id: DateRangeId; label: string }[] = [
   { id: "all", label: "All" },
 ]
 
-export function QuickFiltersCard({ filters, onChange }: QuickFiltersCardProps) {
+export function QuickFiltersCard({ categories, filters, onChange }: QuickFiltersCardProps) {
   const reset = () =>
     onChange({ type: "all", categoryId: "all", range: "this-month" })
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-2">
+      <CardHeader className="flex flex-col items-start justify-between gap-2 sm:flex-row">
         <div>
           <CardTitle className="text-base sm:text-lg">Quick filters</CardTitle>
           <CardDescription>Refine what you see on this dashboard.</CardDescription>
         </div>
-        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={reset}>
+        <Button variant="ghost" size="sm" className="h-7 w-full px-2 text-xs sm:w-auto" onClick={reset}>
           Reset
         </Button>
       </CardHeader>
@@ -69,7 +69,7 @@ export function QuickFiltersCard({ filters, onChange }: QuickFiltersCardProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All categories</SelectItem>
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     <span className="mr-2" aria-hidden="true">{c.glyph}</span>
                     {c.label}

@@ -9,8 +9,17 @@
  */
 
 import type * as analytics from "../analytics.js";
+import type * as budgets from "../budgets.js";
+import type * as categories from "../categories.js";
+import type * as crons from "../crons.js";
 import type * as expenses from "../expenses.js";
+import type * as exports from "../exports.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_dates from "../lib/dates.js";
+import type * as notifications from "../notifications.js";
+import type * as recurring from "../recurring.js";
+import type * as tags from "../tags.js";
+import type * as transactions from "../transactions.js";
 import type * as users from "../users.js";
 
 import type {
@@ -21,8 +30,17 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
+  budgets: typeof budgets;
+  categories: typeof categories;
+  crons: typeof crons;
   expenses: typeof expenses;
+  exports: typeof exports;
   "lib/auth": typeof lib_auth;
+  "lib/dates": typeof lib_dates;
+  notifications: typeof notifications;
+  recurring: typeof recurring;
+  tags: typeof tags;
+  transactions: typeof transactions;
   users: typeof users;
 }>;
 

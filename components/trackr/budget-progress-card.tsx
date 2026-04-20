@@ -2,12 +2,12 @@
 
 import { AlertTriangle } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CATEGORY_MAP } from "@/lib/mock-data"
 import { formatGHS } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import type { CategoryBudget } from "@/lib/types"
+import type { Category, CategoryBudget } from "@/lib/types"
 
 interface BudgetProgressCardProps {
+  categories: Category[]
   budgets: CategoryBudget[]
 }
 
@@ -29,7 +29,8 @@ const toneLabel: Record<"normal" | "warning" | "danger", string> = {
   danger: "text-destructive",
 }
 
-export function BudgetProgressCard({ budgets }: BudgetProgressCardProps) {
+export function BudgetProgressCard({ categories, budgets }: BudgetProgressCardProps) {
+  const categoryMap = Object.fromEntries(categories.map((category) => [category.id, category]))
   const anyOver = budgets.some((b) => b.spent >= b.limit)
 
   return (
@@ -54,7 +55,7 @@ export function BudgetProgressCard({ budgets }: BudgetProgressCardProps) {
       <CardContent>
         <ul className="flex flex-col gap-4">
           {budgets.map((b) => {
-            const cat = CATEGORY_MAP[b.categoryId]
+            const cat = categoryMap[b.categoryId]
             const pct = Math.min(999, Math.round((b.spent / b.limit) * 100))
             const clamped = Math.min(100, pct)
             const t = tone(pct)

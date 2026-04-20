@@ -24,17 +24,17 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { CATEGORIES } from "@/lib/mock-data"
-import type { CategoryId, Transaction, TransactionType } from "@/lib/types"
+import type { Category, CategoryId, Transaction, TransactionType } from "@/lib/types"
 
 interface AddTransactionCardProps {
+  categories: Category[]
   onAdd: (tx: Omit<Transaction, "id">) => void
 }
 
-export function AddTransactionCard({ onAdd }: AddTransactionCardProps) {
+export function AddTransactionCard({ categories, onAdd }: AddTransactionCardProps) {
   const [type, setType] = useState<TransactionType>("expense")
   const [amount, setAmount] = useState<string>("")
-  const [categoryId, setCategoryId] = useState<CategoryId>("food")
+  const [categoryId, setCategoryId] = useState<CategoryId>("")
   const [date, setDate] = useState<string>(() => new Date().toISOString().slice(0, 10))
   const [note, setNote] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -45,18 +45,20 @@ export function AddTransactionCard({ onAdd }: AddTransactionCardProps) {
   const noteId = useId()
 
   const applicable = useMemo(
-    () => CATEGORIES.filter((c) => c.applicableTo.includes(type)),
-    [type],
+    () => categories.filter((c) => c.applicableTo.includes(type)),
+    [categories, type],
   )
+
+  const selectedCategoryId = categoryId || applicable[0]?.id || ""
 
   // When switching type, reset category if current one isn't applicable
   const handleTypeChange = (v: string) => {
     if (!v) return
     const next = v as TransactionType
     setType(next)
-    const stillApplies = CATEGORIES.find((c) => c.id === categoryId)?.applicableTo.includes(next)
+    const stillApplies = categories.find((c) => c.id === categoryId)?.applicableTo.includes(next)
     if (!stillApplies) {
-      const first = CATEGORIES.find((c) => c.applicableTo.includes(next))
+      const first = categories.find((c) => c.applicableTo.includes(next))
       if (first) setCategoryId(first.id)
     }
   }
@@ -76,7 +78,7 @@ export function AddTransactionCard({ onAdd }: AddTransactionCardProps) {
     onAdd({
       type,
       amount: Math.round(n * 100) / 100,
-      categoryId,
+      categoryId: selectedCategoryId,
       date,
       note: note.trim() || undefined,
     })
@@ -136,7 +138,7 @@ export function AddTransactionCard({ onAdd }: AddTransactionCardProps) {
 
             <Field>
               <FieldLabel htmlFor={`cat-${amountId}`}>Category</FieldLabel>
-              <Select value={categoryId} onValueChange={(v) => setCategoryId(v as CategoryId)}>
+              <Select value={selectedCategoryId} onValueChange={(v) => setCategoryId(v as CategoryId)}>
                 <SelectTrigger id={`cat-${amountId}`}>
                   <SelectValue />
                 </SelectTrigger>

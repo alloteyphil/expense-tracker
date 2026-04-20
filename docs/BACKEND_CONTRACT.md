@@ -56,6 +56,26 @@ Recommended indexes:
 - `by_user_and_month`
 - `by_user_and_category_and_month`
 
+## `tags`
+- `userId: Id<"users">`
+- `name: string`
+- `color?: string`
+- `createdAt: number`
+
+## `transactionTags`
+- `userId: Id<"users">`
+- `transactionId: Id<"transactions">`
+- `tagId: Id<"tags">`
+
+## `notifications`
+- `userId: Id<"users">`
+- `title: string`
+- `message: string`
+- `type: "budget" | "recurring" | "system"`
+- `readAt?: number`
+- `createdAt: number`
+- `metadata?: { month?: string, categoryId?: Id<"categories"> }`
+
 ## Public Functions (Target V1)
 
 ## `users.store` (mutation)
@@ -106,6 +126,16 @@ Recommended indexes:
 
 ## `exports.transactionsCsv` (action)
 - Produces CSV payload for selected month and user.
+
+## Additional public functions implemented
+- `categories.list`, `categories.create`, `categories.remove`, `categories.seedDefaults`
+- `tags.list`, `tags.create`
+- `notifications.listRecent`, `notifications.create`, `notifications.markRead`
+- `users.updateProfile`
+
+## Internal recurring automation
+- `recurring.materializeDue` (internal mutation)
+- Cron in `convex/crons.ts` calls materialization on interval.
 
 ## Error Semantics
 - `Not authenticated`

@@ -3,15 +3,6 @@
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Plus, Search, Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { formatMonthYear } from "@/lib/format"
 
@@ -37,7 +28,7 @@ export function Header({ month, onMonthChange, search, onSearchChange, onAddTran
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="Trackr home">
           <span
@@ -85,52 +76,17 @@ export function Header({ month, onMonthChange, search, onSearchChange, onAddTran
         </div>
 
         {/* Add transaction */}
-        <Button
-          onClick={onAddTransaction}
-          className="ml-auto gap-2 md:ml-0"
-          size="sm"
-        >
+        <Button onClick={onAddTransaction} className="ml-auto gap-2 md:ml-0" size="sm">
           <Plus className="size-4" />
-          <span className="hidden sm:inline">Add transaction</span>
           <span className="sm:hidden">Add</span>
+          <span className="hidden sm:inline">Add transaction</span>
         </Button>
 
-        {/* User menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-9 rounded-full"
-              aria-label="Open account menu"
-            >
-              <Avatar className="size-9">
-                <AvatarFallback className="bg-accent text-accent-foreground text-sm font-medium">
-                  KA
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">Kwame Asante</span>
-                <span className="text-xs text-muted-foreground">kwame@trackr.gh</span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Account</DropdownMenuItem>
-            <DropdownMenuItem>Preferences</DropdownMenuItem>
-            <DropdownMenuItem>Export data</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Sign out</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       {/* Mobile secondary row: month + search */}
-      <div className="flex items-center gap-2 border-t border-border px-4 py-2 sm:hidden">
-        <div className="flex flex-1 items-center gap-1 rounded-lg border border-border bg-card p-1">
+      <div className="flex flex-col gap-2 border-t border-border px-4 py-2 sm:hidden">
+        <div className="flex w-full items-center gap-1 rounded-lg border border-border bg-card p-1">
           <Button size="icon" variant="ghost" className="size-7" onClick={prev} aria-label="Previous month">
             <ChevronLeft className="size-4" />
           </Button>
@@ -141,7 +97,7 @@ export function Header({ month, onMonthChange, search, onSearchChange, onAddTran
             <ChevronRight className="size-4" />
           </Button>
         </div>
-        <InputGroup className="flex-1">
+        <InputGroup className="w-full">
           <InputGroupAddon>
             <Search className="size-4" />
           </InputGroupAddon>

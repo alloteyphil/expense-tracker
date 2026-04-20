@@ -4,17 +4,18 @@ import { Cell, Pie, PieChart } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { formatGHS } from "@/lib/format"
-import { CATEGORY_MAP } from "@/lib/mock-data"
-import type { CategoryId, Transaction } from "@/lib/types"
+import type { Category, CategoryId, Transaction } from "@/lib/types"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { PieChart as PieIcon } from "lucide-react"
 
 interface CategoryChartProps {
+  categories: Category[]
   transactions: Transaction[]
   monthLabel: string
 }
 
-export function CategoryChart({ transactions, monthLabel }: CategoryChartProps) {
+export function CategoryChart({ categories, transactions, monthLabel }: CategoryChartProps) {
+  const categoryMap = Object.fromEntries(categories.map((category) => [category.id, category]))
   const expenses = transactions.filter((t) => t.type === "expense")
 
   const byCat = new Map<CategoryId, number>()
@@ -25,9 +26,9 @@ export function CategoryChart({ transactions, monthLabel }: CategoryChartProps) 
   const data = Array.from(byCat.entries())
     .map(([id, value]) => ({
       id,
-      name: CATEGORY_MAP[id]?.label ?? id,
+      name: categoryMap[id]?.label ?? id,
       value,
-      color: CATEGORY_MAP[id]?.color ?? "var(--chart-5)",
+      color: categoryMap[id]?.color ?? "var(--chart-5)",
     }))
     .sort((a, b) => b.value - a.value)
 

@@ -33,12 +33,15 @@
   - Identity existence (`requireUserIdentity`)
   - User record existence (`getCurrentUser`)
 - All data-access functions call `getCurrentUser` before reading/writing user-owned data.
+- Convex auth providers are configured via `CLERK_JWT_ISSUER_DOMAIN` in `convex/auth.config.ts`.
 
 ## Data Model Summary (Target V1)
 - `users`: identity mapping + profile preferences.
 - `categories`: default and custom categories.
 - `transactions`: unified income/expense ledger.
 - `budgets`: month-based category limits.
+- `tags` + `transactionTags`: optional transaction labels.
+- `notifications`: in-app user-scoped alerts and reminders.
 
 See `docs/BACKEND_CONTRACT.md` for exact fields and function contracts.
 
@@ -49,10 +52,10 @@ See `docs/BACKEND_CONTRACT.md` for exact fields and function contracts.
 - `docs/`: product + technical documentation.
 
 ## Current Constraints
-- MVP UI exists on a single route (`app/page.tsx`).
-- Current backend implementation still uses `expenses` table.
-- Target PRD requires migration to `transactions` + `budgets`.
-- Category CRUD and budget UI flows are not yet implemented.
+- Dashboard UX remains on a single route (`app/page.tsx`) and should later split into domain routes.
+- Legacy `expenses` table is still kept for migration compatibility.
+- Recurring generation exists, but advanced recurrence policy and conflict handling are basic.
+- Tags are implemented in backend and need richer dedicated UI.
 
 ## Migration Strategy (Current -> Target)
 1. Add `transactions` and `budgets` tables without removing `expenses`.

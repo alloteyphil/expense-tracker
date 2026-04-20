@@ -1,11 +1,14 @@
 import { AuthConfig } from "convex/server";
 
+const clerkDomain = process.env.CLERK_JWT_ISSUER_DOMAIN;
+
 export default {
-  providers: [
-    // Add your Clerk JWT issuer domain and uncomment:
-    // {
-    //   domain: "https://your-clerk-domain.clerk.accounts.dev",
-    //   applicationID: "convex",
-    // },
-  ],
+  providers: clerkDomain
+    ? [
+        {
+          domain: clerkDomain,
+          applicationID: "convex",
+        },
+      ]
+    : [],
 } satisfies AuthConfig;
