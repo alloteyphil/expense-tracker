@@ -52,7 +52,7 @@ See `docs/BACKEND_CONTRACT.md` for exact fields and function contracts.
 - `docs/`: product + technical documentation.
 
 ## Current Constraints
-- Dashboard UX remains on a single route (`app/page.tsx`) and should later split into domain routes.
+- Product surface now spans domain routes (`/dashboard`, `/transactions`, `/budgets`, `/analytics`, `/settings`, `/profile`) with shared data hooks.
 - Legacy `expenses` table is still kept for migration compatibility.
 - Recurring generation exists, but advanced recurrence policy and conflict handling are basic.
 - Tags are implemented in backend and need richer dedicated UI.
@@ -65,10 +65,15 @@ See `docs/BACKEND_CONTRACT.md` for exact fields and function contracts.
 5. Deprecate `expenses` contract after parity testing.
 
 ## Recommended Refactors
-- Split dashboard into reusable components under `components/dashboard/`.
-- Add route separation:
-  - `/dashboard`
-  - `/transactions`
-  - `/budgets`
-  - `/settings`
-- Add shared validation and formatter utilities (`lib/`).
+- Continue extracting route-level orchestration from `app/*/page.tsx` into reusable containers under `components/trackr/`.
+- Expand current shared hooks approach (`hooks/use-trackr-data.ts`) with feature-scoped hooks (`useTransactionsFilters`, `useBudgetHealth`).
+- Add richer analytics visualizations beyond current income/expense and category mix.
+- Add shared validation and formatter utilities (`lib/`) for currency/date/query-param handling.
+
+## Portfolio Upgrade Notes
+- Signed-in navigation now uses an avatar dropdown in `components/layout/signed-in-nav.tsx` with quick links, theme toggle, and sign-out.
+- Route split uses a shared Convex-backed data hook (`hooks/use-trackr-data.ts`) to reduce duplicated client orchestration.
+- New product-depth signals:
+  - Saved transaction filter presets (`/transactions`)
+  - Budget variance trend (`/budgets`)
+  - Recurring schedule preview (`/analytics`)

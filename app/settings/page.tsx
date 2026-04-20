@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
+import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ const currencies = ["GHS", "USD", "EUR", "NGN"] as const;
 
 export default function SettingsPage() {
   const { isLoaded, isSignedIn } = useAuth();
+  const { theme, setTheme } = useTheme();
   const user = useQuery(api.users.me, isSignedIn ? {} : "skip");
   const updateProfile = useMutation(api.users.updateProfile);
 
@@ -24,6 +26,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const name = nameDraft ?? user?.name ?? "";
   const preferredCurrency = preferredCurrencyDraft ?? user?.preferredCurrency ?? "GHS";
+  const activeTheme = theme ?? "system";
 
   if (!isLoaded) {
     return (
@@ -113,6 +116,26 @@ export default function SettingsPage() {
           <Button onClick={onSave} disabled={saving} className="w-full sm:w-auto">
             {saving ? "Saving..." : "Save changes"}
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Appearance</CardTitle>
+          <CardDescription>Choose how Trackr looks across the app.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <Label htmlFor="theme">Theme</Label>
+          <Select value={activeTheme} onValueChange={setTheme}>
+            <SelectTrigger id="theme">
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light">Light</SelectItem>
+              <SelectItem value="dark">Dark</SelectItem>
+              <SelectItem value="system">System</SelectItem>
+            </SelectContent>
+          </Select>
         </CardContent>
       </Card>
     </main>

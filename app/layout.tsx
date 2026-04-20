@@ -6,9 +6,9 @@ import {
   Show,
   SignInButton,
   SignUpButton,
-  UserButton,
 } from "@clerk/nextjs";
 import ConvexClientProvider from "@/components/convex-client-provider";
+import { SignedInNav } from "@/components/layout/signed-in-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
@@ -42,9 +42,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider dynamic>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <header className="border-b border-border">
-              <div className="mx-auto flex h-14 max-w-7xl items-center justify-end gap-2 px-4 sm:px-6 lg:px-8">
+              <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
+                <Link href="/" className="text-sm font-semibold tracking-tight">
+                  Trackr
+                </Link>
                 <Show when="signed-out">
                   <SignInButton mode="modal">
                     <Button variant="outline" size="sm">
@@ -56,10 +59,7 @@ export default function RootLayout({
                   </SignUpButton>
                 </Show>
                 <Show when="signed-in">
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/settings">Settings</Link>
-                  </Button>
-                  <UserButton />
+                  <SignedInNav />
                 </Show>
               </div>
             </header>

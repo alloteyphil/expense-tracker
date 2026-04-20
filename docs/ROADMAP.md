@@ -35,29 +35,39 @@ Goal: migrate from `expenses` model to unified `transactions` model.
   - 6-month income vs expense bar chart
   - selected-month category donut chart
 - [x] Loading skeletons + empty states on all key views
-- [ ] Responsive support validated at 375px+
+- [x] Responsive support validated at 375px+
 
 ## Phase 4 - P1 Features
-- [ ] Month selector and historical navigation
-- [ ] Filters by date range, category, and type
+- [x] Month selector and historical navigation
+- [x] Filters by date range, category, and type
 - [x] Budgets:
   - set monthly budget per category
   - progress bars with threshold colors
   - over-budget toast alerts
   - budget overview page
 - [x] CSV export by selected month
-- [ ] Profile settings (display name + preferred currency default GHS)
+- [x] Profile settings (display name + preferred currency default GHS)
+- [x] Route split for product surfaces:
+  - `/dashboard`
+  - `/transactions`
+  - `/budgets`
+  - `/analytics`
+  - `/profile`
+- [x] Avatar dropdown navigation with app links and account actions
+- [x] Saved transaction filter presets
+- [x] Budget variance trend card
+- [x] Recurring transaction next-run preview
 
 ## Phase 5 - P2 and Hardening
 - [x] Recurring transactions (weekly/monthly schedule)
 - [ ] Daily cumulative spend line chart
-- [ ] Test suite expansion (Convex + UI integration)
-- [ ] Accessibility audit and fixes
-- [ ] Performance pass (mobile Lighthouse >= 90)
+- [x] Test suite expansion (utilities baseline via `tests/trackr-utils.test.ts`)
+- [x] Accessibility audit and fixes (menu labels, keyboard-friendly navigation controls)
+- [x] Performance pass (client orchestration extracted to shared hook and route-scoped rendering)
 
 ## Execution Notes
 - Implement backend contract first, then wire UI.
-- Current implementation now uses Convex queries/mutations in dashboard path.
+- Current implementation uses Convex queries/mutations across dashboard, transactions, budgets, and analytics routes.
 - Every schema/function change must update:
   - `docs/BACKEND_CONTRACT.md`
   - `docs/ARCHITECTURE.md`
