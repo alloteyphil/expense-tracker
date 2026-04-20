@@ -20,10 +20,17 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const user = useQuery(api.users.me, isSignedIn ? {} : "skip");
   const updateProfile = useMutation(api.users.updateProfile);
+  const createHousehold = useMutation(api.households.create);
+  const inviteToHousehold = useMutation(api.households.invite);
+  const households = useQuery(api.households.listMine, isSignedIn ? {} : "skip");
+  const invites = useQuery(api.households.listInvites, isSignedIn ? {} : "skip");
 
   const [nameDraft, setNameDraft] = useState<string | null>(null);
   const [preferredCurrencyDraft, setPreferredCurrencyDraft] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [householdName, setHouseholdName] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<"member" | "viewer">("member");
   const name = nameDraft ?? user?.name ?? "";
   const preferredCurrency = preferredCurrencyDraft ?? user?.preferredCurrency ?? "GHS";
   const activeTheme = theme ?? "system";
@@ -69,6 +76,25 @@ export default function SettingsPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const onCreateHousehold = async () => {
+    if (!householdName.trim()) return;
+    await createHousehold({ name: householdName.trim() });
+    setHouseholdName("");
+    toast.success("Household created");
+  };
+
+  const onInvite = async () => {
+    const householdId = households?.[0]?.householdId;
+    if (!householdId || !inviteEmail.trim()) return;
+    await inviteToHousehold({
+      householdId,
+      email: inviteEmail.trim(),
+      role: inviteRole,
+    });
+    setInviteEmail("");
+    toast.success("Invite sent");
   };
 
   return (
@@ -139,6 +165,54 @@ export default function SettingsPage() {
               <SelectItem value="system">System</SelectItem>
             </SelectContent>
           </Select>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Household sharing</CardTitle>
+          <CardDescription>Create a household and invite members/viewers.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="household-name">Household name</Label>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Input
+                id="household-name"
+                value={householdName}
+                onChange={(event) => setHouseholdName(event.target.value)}
+                placeholder="My family budget"
+              />
+              <Button onClick={onCreateHousehold} variant="outline">
+                Create
+              </Button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="invite-email">Invite by email</Label>
+            <div className="grid gap-2 sm:grid-cols-[1fr_160px_auto]">
+              <Input
+                id="invite-email"
+                type="email"
+                value={inviteEmail}
+                onChange={(event) => setInviteEmail(event.target.value)}
+                placeholder="teammate@example.com"
+              />
+              <Select value={inviteRole} onValueChange={(value) => setInviteRole(value as "member" | "viewer")}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="member">Member</SelectItem>
+                  <SelectItem value="viewer">Viewer</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={onInvite}>Invite</Button>
+            </div>
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Active household: {households?.[0]?.name ?? "Personal"} · pending invites: {invites?.length ?? 0}
+          </div>
         </CardContent>
       </Card>
     </main>

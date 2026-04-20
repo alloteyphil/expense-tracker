@@ -64,6 +64,11 @@ Goal: migrate from `expenses` model to unified `transactions` model.
 - [x] Test suite expansion (utilities baseline via `tests/trackr-utils.test.ts`)
 - [x] Accessibility audit and fixes (menu labels, keyboard-friendly navigation controls)
 - [x] Performance pass (client orchestration extracted to shared hook and route-scoped rendering)
+- [x] Goal planning domain (schema + Convex API + `/goals`)
+- [x] Alerts center (typed notifications + unread badge + `/alerts`)
+- [x] Receipt OCR-lite flow (upload draft + parse + transaction prefill via `/receipts`)
+- [x] Household sharing MVP (create household + invite + role-aware helpers)
+- [x] Financial health score API + analytics card with explainability
 
 ## Execution Notes
 - Implement backend contract first, then wire UI.

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SignOutButton, useUser } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Moon, Settings, Sun, User } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useTheme } from "@/components/theme-provider";
@@ -24,6 +24,9 @@ const navItems = [
   { href: "/transactions", label: "Transactions" },
   { href: "/budgets", label: "Budgets" },
   { href: "/analytics", label: "Analytics" },
+  { href: "/goals", label: "Goals" },
+  { href: "/alerts", label: "Alerts" },
+  { href: "/receipts", label: "Receipts" },
 ];
 
 function initialsFor(name: string) {
@@ -39,9 +42,13 @@ export function SignedInNav() {
   const pathname = usePathname();
   const { user } = useUser();
   const appUser = useQuery(api.users.me, {});
+  const unreadAlerts = useQuery(api.notifications.unreadCount, {});
+  const households = useQuery(api.households.listMine, {});
+  const createHousehold = useMutation(api.households.create);
   const { setTheme } = useTheme();
   const displayName = appUser?.name ?? user?.fullName ?? user?.username ?? "User";
   const initials = initialsFor(displayName) || "U";
+  const activeHouseholdName = households?.[0]?.name ?? "Personal";
 
   return (
     <>
@@ -55,7 +62,14 @@ export function SignedInNav() {
               size="sm"
               asChild
             >
-              <Link href={item.href}>{item.label}</Link>
+              <Link href={item.href} className="inline-flex items-center gap-1.5">
+                <span>{item.label}</span>
+                {item.href === "/alerts" && (unreadAlerts ?? 0) > 0 ? (
+                  <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground">
+                    {unreadAlerts}
+                  </span>
+                ) : null}
+              </Link>
             </Button>
           );
         })}
@@ -83,9 +97,29 @@ export function SignedInNav() {
           <DropdownMenuSeparator />
           {navItems.map((item) => (
             <DropdownMenuItem key={item.href} asChild>
-              <Link href={item.href}>{item.label}</Link>
+              <Link href={item.href} className="inline-flex items-center gap-1.5">
+                <span>{item.label}</span>
+                {item.href === "/alerts" && (unreadAlerts ?? 0) > 0 ? (
+                  <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground">
+                    {unreadAlerts}
+                  </span>
+                ) : null}
+              </Link>
             </DropdownMenuItem>
           ))}
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel className="text-xs text-muted-foreground">
+            Active household: {activeHouseholdName}
+          </DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={async () => {
+              const name = window.prompt("New household name");
+              if (!name?.trim()) return;
+              await createHousehold({ name: name.trim() });
+            }}
+          >
+            Create household
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/profile">

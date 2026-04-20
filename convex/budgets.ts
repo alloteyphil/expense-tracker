@@ -28,9 +28,20 @@ export const upsert = mutation({
     const now = Date.now();
     if (existing) {
       await ctx.db.patch(existing._id, { limitMinor: args.limitMinor, updatedAt: now });
+      if (args.limitMinor <= 50000) {
+        await ctx.db.insert("notifications", {
+          userId: user._id,
+          title: "Budget risk warning",
+          message: "This budget limit is very low and may be exceeded quickly.",
+          type: "budget_risk",
+          severity: "medium",
+          createdAt: now,
+          metadata: { month: args.month, categoryId: args.categoryId },
+        });
+      }
       return existing._id;
     }
-    return await ctx.db.insert("budgets", {
+    const id = await ctx.db.insert("budgets", {
       userId: user._id,
       categoryId: args.categoryId,
       month: args.month,
@@ -38,6 +49,18 @@ export const upsert = mutation({
       createdAt: now,
       updatedAt: now,
     });
+    if (args.limitMinor <= 50000) {
+      await ctx.db.insert("notifications", {
+        userId: user._id,
+        title: "Budget risk warning",
+        message: "This budget limit is very low and may be exceeded quickly.",
+        type: "budget_risk",
+        severity: "medium",
+        createdAt: now,
+        metadata: { month: args.month, categoryId: args.categoryId },
+      });
+    }
+    return id;
   },
 });
 

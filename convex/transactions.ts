@@ -56,6 +56,17 @@ export const create = mutation({
         await ctx.db.insert("transactionTags", { userId: user._id, transactionId: id, tagId });
       }
     }
+
+    if (args.type === "expense" && args.amountMinor >= 200000) {
+      await ctx.db.insert("notifications", {
+        userId: user._id,
+        title: "Spend spike detected",
+        message: `Large expense of ${(args.amountMinor / 100).toFixed(2)} recorded.`,
+        type: "spend_spike",
+        severity: "high",
+        createdAt: now,
+      });
+    }
     return id;
   },
 });

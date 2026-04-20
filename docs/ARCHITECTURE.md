@@ -14,6 +14,10 @@
 - Budgets (monthly per category)
 - Analytics dashboard
 - CSV export
+- Goals planning
+- Alerts center
+- Receipt ingestion (OCR-lite)
+- Household sharing and roles
 
 ## Data Flow (Target V1)
 1. User authenticates with Clerk and enters protected app routes.
@@ -42,6 +46,9 @@
 - `budgets`: month-based category limits.
 - `tags` + `transactionTags`: optional transaction labels.
 - `notifications`: in-app user-scoped alerts and reminders.
+- `goals`: progress-based targets with optional shared household scope.
+- `receipts`: upload + parse status for receipt-assisted entry.
+- `households` + `householdMembers` + `householdInvites`: collaborative budgeting access model.
 
 See `docs/BACKEND_CONTRACT.md` for exact fields and function contracts.
 
@@ -77,3 +84,12 @@ See `docs/BACKEND_CONTRACT.md` for exact fields and function contracts.
   - Saved transaction filter presets (`/transactions`)
   - Budget variance trend (`/budgets`)
   - Recurring schedule preview (`/analytics`)
+  - Goal planning route and dashboard widget (`/goals`)
+  - Alerts inbox with unread/severity filtering (`/alerts`)
+  - Receipt parse and prefill workflow (`/receipts`)
+  - Household creation/invite flow in settings and nav
+
+## Engineering Notes
+- Tradeoff: Receipt flow is intentionally OCR-lite in MVP (text heuristic parser) to validate UX before adding full OCR service cost/latency.
+- Tradeoff: Household switching currently defaults to first membership to keep onboarding simple while role checks are already enforced server-side.
+- Health score is explainable by design: backend returns subscores and reasons to avoid opaque analytics.

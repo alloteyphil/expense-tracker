@@ -29,14 +29,19 @@ import type { Category, CategoryId, Transaction, TransactionType } from "@/lib/t
 interface AddTransactionCardProps {
   categories: Category[]
   onAdd: (tx: Omit<Transaction, "id">) => void
+  initialDraft?: Partial<Pick<Transaction, "amount" | "date" | "note">>
 }
 
-export function AddTransactionCard({ categories, onAdd }: AddTransactionCardProps) {
+export function AddTransactionCard({ categories, onAdd, initialDraft }: AddTransactionCardProps) {
   const [type, setType] = useState<TransactionType>("expense")
-  const [amount, setAmount] = useState<string>("")
+  const [amount, setAmount] = useState<string>(
+    initialDraft?.amount !== undefined ? String(initialDraft.amount) : "",
+  )
   const [categoryId, setCategoryId] = useState<CategoryId>("")
-  const [date, setDate] = useState<string>(() => new Date().toISOString().slice(0, 10))
-  const [note, setNote] = useState("")
+  const [date, setDate] = useState<string>(
+    () => initialDraft?.date ?? new Date().toISOString().slice(0, 10),
+  )
+  const [note, setNote] = useState(initialDraft?.note ?? "")
   const [error, setError] = useState<string | null>(null)
   const [justAdded, setJustAdded] = useState(false)
 

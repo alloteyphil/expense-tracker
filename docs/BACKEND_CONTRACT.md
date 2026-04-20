@@ -69,12 +69,60 @@ Recommended indexes:
 
 ## `notifications`
 - `userId: Id<"users">`
+- `householdId?: Id<"households">`
 - `title: string`
 - `message: string`
-- `type: "budget" | "recurring" | "system"`
+- `type: "budget" | "recurring" | "system" | "budget_risk" | "spend_spike" | "goal_slip" | "receipt_failed"`
+- `severity?: "low" | "medium" | "high"`
 - `readAt?: number`
 - `createdAt: number`
-- `metadata?: { month?: string, categoryId?: Id<"categories"> }`
+- `metadata?: { month?: string, categoryId?: Id<"categories">, goalId?: Id<"goals">, receiptId?: Id<"receipts"> }`
+
+## `goals`
+- `userId: Id<"users">`
+- `householdId?: Id<"households">`
+- `name: string`
+- `targetAmountMinor: number`
+- `currentAmountMinor: number`
+- `targetDate?: string`
+- `monthlyContributionMinor?: number`
+- `status: "active" | "archived" | "completed"`
+- `createdAt: number`
+- `updatedAt: number`
+
+## `receipts`
+- `userId: Id<"users">`
+- `householdId?: Id<"households">`
+- `storageId?: Id<"_storage">`
+- `fileName: string`
+- `contentType?: string`
+- `status: "uploaded" | "parsed" | "needs_review" | "failed"`
+- `extractedAmountMinor?: number`
+- `extractedMerchant?: string`
+- `extractedDate?: number`
+- `parserNotes?: string`
+- `linkedTransactionId?: Id<"transactions">`
+- `createdAt: number`
+- `updatedAt: number`
+
+## `households`
+- `ownerUserId: Id<"users">`
+- `name: string`
+- `createdAt: number`
+
+## `householdMembers`
+- `householdId: Id<"households">`
+- `userId: Id<"users">`
+- `role: "owner" | "member" | "viewer"`
+- `joinedAt: number`
+
+## `householdInvites`
+- `householdId: Id<"households">`
+- `email: string`
+- `role: "member" | "viewer"`
+- `invitedByUserId: Id<"users">`
+- `status: "pending" | "accepted" | "revoked"`
+- `createdAt: number`
 
 ## Public Functions (Target V1)
 
@@ -118,6 +166,13 @@ Recommended indexes:
 ## `analytics.monthlyIncomeExpense` (query)
 - 6-month series for dashboard bar chart.
 
+## `analytics.healthScore` (query)
+- Returns weighted health score and explainable subscores:
+  - `savingsRate`
+  - `budgetAdherence`
+  - `recurringBurden`
+  - `spendingStability`
+
 ## `budgets.upsert` (mutation)
 - Sets monthly budget for category.
 
@@ -130,7 +185,10 @@ Recommended indexes:
 ## Additional public functions implemented
 - `categories.list`, `categories.create`, `categories.remove`, `categories.seedDefaults`
 - `tags.list`, `tags.create`
-- `notifications.listRecent`, `notifications.create`, `notifications.markRead`
+- `notifications.listRecent`, `notifications.unreadCount`, `notifications.create`, `notifications.markRead`
+- `goals.list`, `goals.create`, `goals.updateProgress`, `goals.archive`
+- `receipts.listRecent`, `receipts.createUpload`, `receipts.parseDraft`, `receipts.markFailed`
+- `households.listMine`, `households.create`, `households.invite`, `households.listInvites`
 - `users.updateProfile`
 
 ## Internal recurring automation

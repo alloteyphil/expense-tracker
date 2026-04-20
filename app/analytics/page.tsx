@@ -62,6 +62,36 @@ export default function AnalyticsPage() {
             ))}
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Financial health score</CardTitle>
+            <CardDescription>Composite score with transparent subscore weighting.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+              Score: {data.healthScore?.score ?? 0}/100
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <p className="text-sm text-muted-foreground">
+                Savings rate: {data.healthScore?.subscores.savingsRate ?? 0}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Budget adherence: {data.healthScore?.subscores.budgetAdherence ?? 0}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Recurring burden: {data.healthScore?.subscores.recurringBurden ?? 0}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Spending stability: {data.healthScore?.subscores.spendingStability ?? 0}
+              </p>
+            </div>
+            <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
+              {(data.healthScore?.reasons ?? []).map((reason) => (
+                <li key={reason}>{reason}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

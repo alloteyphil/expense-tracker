@@ -24,6 +24,15 @@ export type RecurringPreviewItem = {
   nextRunDate: string;
 };
 
+export type GoalPreviewItem = {
+  id: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  progressPct: number;
+  targetDate?: string;
+};
+
 export function useTrackrData() {
   const { isLoaded, isSignedIn } = useAuth();
   const [userReady, setUserReady] = useState(false);
@@ -59,6 +68,10 @@ export function useTrackrData() {
     api.analytics.monthlyIncomeExpense,
     canQuery ? { month: monthId } : "skip",
   );
+  const healthScore = useQuery(
+    api.analytics.healthScore,
+    canQuery ? { month: monthId } : "skip",
+  );
   const budgetsRaw = useQuery(
     api.budgets.listByMonth,
     canQuery ? { month: monthId } : "skip",
@@ -73,13 +86,16 @@ export function useTrackrData() {
         }
       : "skip",
   );
+  const goalsRaw = useQuery(api.goals.list, canQuery ? { includeArchived: false } : "skip");
 
   const loading =
     categoriesRaw === undefined ||
     listResponse === undefined ||
     monthSummary === undefined ||
     monthSeries === undefined ||
-    budgetsRaw === undefined;
+    budgetsRaw === undefined ||
+    goalsRaw === undefined ||
+    healthScore === undefined;
 
   useEffect(() => {
     if (!isSignedIn) return;
@@ -173,6 +189,27 @@ export function useTrackrData() {
         previousSpent > 0 ? ((currentSpent - previousSpent) / previousSpent) * 100 : 0,
     };
   }, [budgets, previousBudgets]);
+
+  const goals: GoalPreviewItem[] = useMemo(
+    () =>
+      (goalsRaw ?? []).map((goal) => ({
+        id: goal._id,
+        name: goal.name,
+        targetAmount: goal.targetAmountMinor / 100,
+        currentAmount: goal.currentAmountMinor / 100,
+        progressPct:
+          goal.targetAmountMinor > 0
+            ? Math.min(
+                100,
+                Math.round((goal.currentAmountMinor / goal.targetAmountMinor) * 100),
+              )
+            : 0,
+        targetDate: goal.targetDate,
+      })),
+    [goalsRaw],
+  );
+
+  const topGoal = goals[0] ?? null;
 
   const chartData: MonthlyTotals[] = useMemo(
     () =>
@@ -316,6 +353,9 @@ export function useTrackrData() {
     filteredForList,
     thisMonthTransactions,
     budgets,
+    goals,
+    topGoal,
+    healthScore,
     budgetVariance,
     recurringPreview,
     chartData,

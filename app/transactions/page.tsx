@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Save } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { AddTransactionCard } from "@/components/trackr/add-transaction-card";
 import { Header } from "@/components/trackr/header";
 import { QuickFiltersCard } from "@/components/trackr/quick-filters-card";
@@ -15,6 +16,7 @@ const PRESET_STORAGE_KEY = "trackr.transactionFilterPresets";
 
 export default function TransactionsPage() {
   const data = useTrackrData();
+  const searchParams = useSearchParams();
   const [selectedPreset, setSelectedPreset] = useState("default");
   const [presets, setPresets] = useState<Record<string, typeof data.filters>>(() => {
     if (typeof window === "undefined") return {};
@@ -31,6 +33,17 @@ export default function TransactionsPage() {
     () => Object.entries(presets).sort(([a], [b]) => a.localeCompare(b)),
     [presets],
   );
+
+  const initialDraft = useMemo(() => {
+    const amount = searchParams.get("amount");
+    const date = searchParams.get("date");
+    const merchant = searchParams.get("merchant");
+    return {
+      amount: amount ? Number(amount) : undefined,
+      date: date ?? undefined,
+      note: merchant ?? undefined,
+    };
+  }, [searchParams]);
 
   const saveCurrentPreset = () => {
     const key = window.prompt("Preset name");
@@ -114,7 +127,12 @@ export default function TransactionsPage() {
               {data.loading ? (
                 <ChartSkeleton height="h-64" />
               ) : (
-                <AddTransactionCard categories={data.categories} onAdd={data.handleAdd} />
+                <AddTransactionCard
+                  key={`${initialDraft.amount ?? ""}-${initialDraft.date ?? ""}-${initialDraft.note ?? ""}`}
+                  categories={data.categories}
+                  onAdd={data.handleAdd}
+                  initialDraft={initialDraft}
+                />
               )}
             </div>
           </aside>

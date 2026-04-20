@@ -90,3 +90,53 @@ export const monthlyIncomeExpense = query({
     return result;
   },
 });
+
+export const healthScore = query({
+  args: { month: v.string() },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const { start, end } = monthRange(args.month);
+    const rows = await ctx.db
+      .query("transactions")
+      .withIndex("by_user_and_date", (q) =>
+        q.eq("userId", user._id).gte("date", start).lte("date", end),
+      )
+      .collect();
+    const income = rows
+      .filter((row) => row.type === "income")
+      .reduce((sum, row) => sum + row.amountMinor, 0);
+    const expense = rows
+      .filter((row) => row.type === "expense")
+      .reduce((sum, row) => sum + row.amountMinor, 0);
+    const recurringExpense = rows
+      .filter((row) => row.type === "expense" && row.isRecurring)
+      .reduce((sum, row) => sum + row.amountMinor, 0);
+
+    const savingsRate = income > 0 ? Math.max(0, ((income - expense) / income) * 100) : 0;
+    const recurringBurden = income > 0 ? Math.min(100, (recurringExpense / income) * 100) : 0;
+    const spendingStability = rows.length > 0 ? Math.max(0, 100 - Math.min(100, rows.length * 2)) : 80;
+    const budgetAdherence = expense <= income ? 85 : 45;
+
+    const weighted = Math.round(
+      savingsRate * 0.35 +
+        budgetAdherence * 0.25 +
+        (100 - recurringBurden) * 0.2 +
+        spendingStability * 0.2,
+    );
+
+    return {
+      score: Math.max(0, Math.min(100, weighted)),
+      subscores: {
+        savingsRate: Math.round(savingsRate),
+        budgetAdherence: Math.round(budgetAdherence),
+        recurringBurden: Math.round(recurringBurden),
+        spendingStability: Math.round(spendingStability),
+      },
+      reasons: [
+        `Savings rate at ${Math.round(savingsRate)}%.`,
+        `Recurring burden at ${Math.round(recurringBurden)}% of income.`,
+        `Spending stability score ${Math.round(spendingStability)}.`,
+      ],
+    };
+  },
+});

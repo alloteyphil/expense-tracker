@@ -88,6 +88,14 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">{data.transactions.length} transactions tracked</p>
           </div>
         </div>
+        {data.topGoal && (
+          <div className="mb-6 rounded-xl border border-border bg-card p-4">
+            <p className="text-sm font-medium">Top goal: {data.topGoal.name}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {data.topGoal.progressPct}% complete · {data.topGoal.currentAmount.toFixed(2)} / {data.topGoal.targetAmount.toFixed(2)}
+            </p>
+          </div>
+        )}
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {data.loading
             ? Array.from({ length: 4 }).map((_, index) => <KpiCardSkeleton key={index} />)

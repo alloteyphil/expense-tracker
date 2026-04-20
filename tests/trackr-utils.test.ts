@@ -1,5 +1,4 @@
-import test from "node:test";
-import assert from "node:assert/strict";
+import { describe, expect, it } from "vitest";
 import { monthKey, withinRange } from "../lib/trackr";
 import type { Transaction } from "../lib/types";
 
@@ -13,22 +12,24 @@ function tx(date: string): Transaction {
   };
 }
 
-test("monthKey returns zero-padded yyyy-mm", () => {
-  assert.equal(monthKey(new Date("2026-04-20T00:00:00.000Z")), "2026-04");
-  assert.equal(monthKey(new Date("2026-01-03T00:00:00.000Z")), "2026-01");
-});
+describe("trackr date helpers", () => {
+  it("monthKey returns zero-padded yyyy-mm", () => {
+    expect(monthKey(new Date("2026-04-20T00:00:00.000Z"))).toBe("2026-04");
+    expect(monthKey(new Date("2026-01-03T00:00:00.000Z"))).toBe("2026-01");
+  });
 
-test("withinRange handles this-month and last-month", () => {
-  const anchor = new Date("2026-04-20T00:00:00.000Z");
-  assert.equal(withinRange(tx("2026-04-01"), "this-month", anchor), true);
-  assert.equal(withinRange(tx("2026-03-31"), "this-month", anchor), false);
-  assert.equal(withinRange(tx("2026-03-15"), "last-month", anchor), true);
-  assert.equal(withinRange(tx("2026-02-15"), "last-month", anchor), false);
-});
+  it("withinRange handles this-month and last-month", () => {
+    const anchor = new Date("2026-04-20T00:00:00.000Z");
+    expect(withinRange(tx("2026-04-01"), "this-month", anchor)).toBe(true);
+    expect(withinRange(tx("2026-03-31"), "this-month", anchor)).toBe(false);
+    expect(withinRange(tx("2026-03-15"), "last-month", anchor)).toBe(true);
+    expect(withinRange(tx("2026-02-15"), "last-month", anchor)).toBe(false);
+  });
 
-test("withinRange handles rolling three-month window", () => {
-  const anchor = new Date("2026-04-20T00:00:00.000Z");
-  assert.equal(withinRange(tx("2026-02-01"), "3-months", anchor), true);
-  assert.equal(withinRange(tx("2026-04-30"), "3-months", anchor), true);
-  assert.equal(withinRange(tx("2026-01-31"), "3-months", anchor), false);
+  it("withinRange handles rolling three-month window", () => {
+    const anchor = new Date("2026-04-20T00:00:00.000Z");
+    expect(withinRange(tx("2026-02-01"), "3-months", anchor)).toBe(true);
+    expect(withinRange(tx("2026-04-30"), "3-months", anchor)).toBe(true);
+    expect(withinRange(tx("2026-01-31"), "3-months", anchor)).toBe(false);
+  });
 });
