@@ -74,7 +74,9 @@ export default function DashboardPage() {
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Overview</h1>
-            <p className="text-sm text-muted-foreground">{formatMonthYear(data.month)} · GHS</p>
+            <p className="text-sm text-muted-foreground">
+              Welcome back, {data.currentUserName ?? "there"} · {formatMonthYear(data.month)} · GHS
+            </p>
           </div>
           <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button size="sm" variant="outline" onClick={data.handleExport} className="w-full sm:w-auto">

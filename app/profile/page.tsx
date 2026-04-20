@@ -44,7 +44,7 @@ export default function ProfilePage() {
           <Link href="/settings">Open app settings</Link>
         </Button>
       </div>
-      <UserProfile path="/profile" routing="path" />
+      <UserProfile routing="hash" />
     </main>
   );
 }

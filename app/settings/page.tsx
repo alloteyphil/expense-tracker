@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
-import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -77,6 +77,9 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
           <p className="text-sm text-muted-foreground">Manage your profile and preferences.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Current display name: <span className="font-medium text-foreground">{user?.name ?? "Not set"}</span>
+          </p>
         </div>
         <Button variant="outline" asChild className="w-full sm:w-auto">
           <Link href="/">Back to dashboard</Link>

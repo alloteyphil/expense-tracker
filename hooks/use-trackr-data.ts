@@ -45,6 +45,7 @@ export function useTrackrData() {
   const exportCsv = useAction(api.exports.transactionsCsv);
 
   const canQuery = isSignedIn && userReady;
+  const appUser = useQuery(api.users.me, isSignedIn ? {} : "skip");
   const categoriesRaw = useQuery(api.categories.list, canQuery ? {} : "skip");
   const listResponse = useQuery(
     api.transactions.list,
@@ -299,6 +300,7 @@ export function useTrackrData() {
   return {
     isLoaded,
     isSignedIn,
+    currentUserName: appUser?.name ?? null,
     month,
     setMonth,
     monthId,
