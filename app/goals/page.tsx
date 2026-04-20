@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "convex/react";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/trackr/header";
 import { ChartSkeleton } from "@/components/trackr/skeletons";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { api } from "@/convex/_generated/api";
 
 export default function GoalsPage() {
   const data = useTrackrData();
+  const router = useRouter();
   const createGoal = useMutation(api.goals.create);
   const [name, setName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
@@ -45,7 +47,7 @@ export default function GoalsPage() {
         onMonthChange={data.setMonth}
         search={data.search}
         onSearchChange={data.setSearch}
-        onAddTransaction={() => {}}
+        onAddTransaction={() => router.push("/transactions#add-transaction")}
       />
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div>

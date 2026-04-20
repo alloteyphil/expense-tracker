@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAction, useMutation, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import { Header } from "@/components/trackr/header";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { useTrackrData } from "@/hooks/use-trackr-data";
 
 export default function ReceiptsPage() {
   const data = useTrackrData();
+  const router = useRouter();
   const list = useQuery(api.receipts.listRecent, { limit: 50 });
   const generateUploadUrl = useMutation(api.receipts.generateUploadUrl);
   const createUpload = useMutation(api.receipts.createUpload);
@@ -75,7 +77,7 @@ export default function ReceiptsPage() {
         onMonthChange={data.setMonth}
         search={data.search}
         onSearchChange={data.setSearch}
-        onAddTransaction={() => {}}
+        onAddTransaction={() => router.push("/transactions#add-transaction")}
       />
       <main className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div>

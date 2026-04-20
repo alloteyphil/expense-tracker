@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/trackr/header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { useTrackrData } from "@/hooks/use-trackr-data";
 
 export default function AlertsPage() {
   const data = useTrackrData();
+  const router = useRouter();
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [severity, setSeverity] = useState<"all" | "low" | "medium" | "high">("all");
   const markRead = useMutation(api.notifications.markRead);
@@ -26,7 +28,7 @@ export default function AlertsPage() {
         onMonthChange={data.setMonth}
         search={data.search}
         onSearchChange={data.setSearch}
-        onAddTransaction={() => {}}
+        onAddTransaction={() => router.push("/transactions#add-transaction")}
       />
       <main className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-2">
