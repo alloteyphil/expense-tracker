@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { SignOutButton, useAuth, useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { Moon, Settings, Sun, User } from "lucide-react";
 import { api } from "@/convex/_generated/api";
@@ -40,10 +40,12 @@ function initialsFor(name: string) {
 
 export function SignedInNav() {
   const pathname = usePathname();
+  const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
-  const appUser = useQuery(api.users.me, {});
-  const unreadAlerts = useQuery(api.notifications.unreadCount, {});
-  const households = useQuery(api.households.listMine, {});
+  const canQuery = isLoaded && isSignedIn;
+  const appUser = useQuery(api.users.me, canQuery ? {} : "skip");
+  const unreadAlerts = useQuery(api.notifications.unreadCount, canQuery ? {} : "skip");
+  const households = useQuery(api.households.listMine, canQuery ? {} : "skip");
   const createHousehold = useMutation(api.households.create);
   const { setTheme } = useTheme();
   const displayName = appUser?.name ?? user?.fullName ?? user?.username ?? "User";
@@ -144,7 +146,7 @@ export function SignedInNav() {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <SignOutButton>
+            <SignOutButton fallbackRedirectUrl="/">
               <button type="button" className="w-full text-left">
                 Sign out
               </button>

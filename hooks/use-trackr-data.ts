@@ -54,7 +54,7 @@ export function useTrackrData() {
   const exportCsv = useAction(api.exports.transactionsCsv);
 
   const canQuery = isSignedIn && userReady;
-  const appUser = useQuery(api.users.me, isSignedIn ? {} : "skip");
+  const appUser = useQuery(api.users.me, canQuery ? {} : "skip");
   const categoriesRaw = useQuery(api.categories.list, canQuery ? {} : "skip");
   const listResponse = useQuery(
     api.transactions.list,
@@ -70,6 +70,10 @@ export function useTrackrData() {
   );
   const healthScore = useQuery(
     api.analytics.healthScore,
+    canQuery ? { month: monthId } : "skip",
+  );
+  const categoryBreakdownRaw = useQuery(
+    api.analytics.categoryBreakdown,
     canQuery ? { month: monthId } : "skip",
   );
   const budgetsRaw = useQuery(
@@ -93,12 +97,16 @@ export function useTrackrData() {
     listResponse === undefined ||
     monthSummary === undefined ||
     monthSeries === undefined ||
+    categoryBreakdownRaw === undefined ||
     budgetsRaw === undefined ||
     goalsRaw === undefined ||
     healthScore === undefined;
 
   useEffect(() => {
-    if (!isSignedIn) return;
+    if (!isSignedIn) {
+      setUserReady(false);
+      return;
+    }
     const init = async () => {
       try {
         await storeUser({});
@@ -225,6 +233,16 @@ export function useTrackrData() {
     [monthSeries],
   );
 
+  const categoryBreakdown = useMemo(
+    () =>
+      (categoryBreakdownRaw ?? []).map((row) => ({
+        categoryId: row.categoryId,
+        amount: row.amountMinor / 100,
+        count: row.count,
+      })),
+    [categoryBreakdownRaw],
+  );
+
   const kpis: Kpi[] = useMemo(() => {
     const budgetUsagePct = budgets.length
       ? (budgets.reduce((sum, row) => sum + row.spent, 0) /
@@ -304,8 +322,14 @@ export function useTrackrData() {
   };
 
   const handleDelete = async (transactionId: string) => {
-    await removeTransaction({ transactionId: transactionId as never });
-    toast("Transaction deleted");
+    try {
+      await removeTransaction({ transactionId: transactionId as never });
+      toast.success("Transaction deleted");
+    } catch (deleteError) {
+      toast.error(
+        deleteError instanceof Error ? deleteError.message : "Failed to delete transaction",
+      );
+    }
   };
 
   const handleExport = async () => {
@@ -338,6 +362,7 @@ export function useTrackrData() {
     isLoaded,
     isSignedIn,
     currentUserName: appUser?.name ?? null,
+    monthTransactionCount: monthSummary?.transactionCount ?? 0,
     month,
     setMonth,
     monthId,
@@ -359,6 +384,7 @@ export function useTrackrData() {
     budgetVariance,
     recurringPreview,
     chartData,
+    categoryBreakdown,
     kpis,
     handleAdd,
     handleDelete,

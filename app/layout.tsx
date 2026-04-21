@@ -4,13 +4,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import {
   ClerkProvider,
   Show,
-  SignInButton,
-  SignUpButton,
 } from "@clerk/nextjs";
 import ConvexClientProvider from "@/components/convex-client-provider";
 import { SignedInNav } from "@/components/layout/signed-in-nav";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -25,8 +22,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trackr - Personal Expense Tracker",
+  title: {
+    default: "Trackr | Personal Expense Tracker",
+    template: "%s | Trackr",
+  },
   description: "Track income, expenses, budgets, and analytics in one dashboard.",
+  applicationName: "Trackr",
+  keywords: ["expense tracker", "budgeting", "personal finance", "transactions", "analytics"],
 };
 
 const themeBootstrapScript = `(() => {
@@ -63,18 +65,15 @@ export default function RootLayout({
             <ConvexClientProvider>
               <header className="border-b border-border">
                 <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
-                  <Link href="/" className="text-sm font-semibold tracking-tight">
-                    Trackr
-                  </Link>
                   <Show when="signed-out">
-                    <SignInButton mode="modal">
-                      <Button variant="outline" size="sm">
-                        Sign in
-                      </Button>
-                    </SignInButton>
-                    <SignUpButton mode="modal">
-                      <Button size="sm">Sign up</Button>
-                    </SignUpButton>
+                    <Link href="/" className="text-sm font-semibold tracking-tight">
+                      Trackr
+                    </Link>
+                  </Show>
+                  <Show when="signed-in">
+                    <Link href="/dashboard" className="text-sm font-semibold tracking-tight">
+                      Trackr
+                    </Link>
                   </Show>
                   <Show when="signed-in">
                     <SignedInNav />

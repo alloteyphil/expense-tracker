@@ -108,7 +108,7 @@ export default function SettingsPage() {
           </p>
         </div>
         <Button variant="outline" asChild className="w-full sm:w-auto">
-          <Link href="/">Back to dashboard</Link>
+          <Link href="/dashboard">Back to dashboard</Link>
         </Button>
       </div>
 

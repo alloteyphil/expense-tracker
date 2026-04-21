@@ -4,31 +4,24 @@ import { Cell, Pie, PieChart } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { formatGHS } from "@/lib/format"
-import type { Category, CategoryId, Transaction } from "@/lib/types"
+import type { Category, CategoryId } from "@/lib/types"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { PieChart as PieIcon } from "lucide-react"
 
 interface CategoryChartProps {
   categories: Category[]
-  transactions: Transaction[]
+  breakdown: Array<{ categoryId: CategoryId; amount: number; count: number }>
   monthLabel: string
 }
 
-export function CategoryChart({ categories, transactions, monthLabel }: CategoryChartProps) {
+export function CategoryChart({ categories, breakdown, monthLabel }: CategoryChartProps) {
   const categoryMap = Object.fromEntries(categories.map((category) => [category.id, category]))
-  const expenses = transactions.filter((t) => t.type === "expense")
-
-  const byCat = new Map<CategoryId, number>()
-  for (const t of expenses) {
-    byCat.set(t.categoryId, (byCat.get(t.categoryId) || 0) + t.amount)
-  }
-
-  const data = Array.from(byCat.entries())
-    .map(([id, value]) => ({
-      id,
-      name: categoryMap[id]?.label ?? id,
-      value,
-      color: categoryMap[id]?.color ?? "var(--chart-5)",
+  const data = breakdown
+    .map((row) => ({
+      id: row.categoryId,
+      name: categoryMap[row.categoryId]?.label ?? row.categoryId,
+      value: row.amount,
+      color: categoryMap[row.categoryId]?.color ?? "var(--chart-5)",
     }))
     .sort((a, b) => b.value - a.value)
 

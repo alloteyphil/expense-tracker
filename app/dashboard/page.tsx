@@ -85,7 +85,9 @@ export default function DashboardPage() {
             <Button size="sm" variant="ghost" onClick={data.saveBudgetNotification} className="w-full sm:w-auto">
               Save budget alert
             </Button>
-            <p className="text-xs text-muted-foreground">{data.transactions.length} transactions tracked</p>
+            <p className="text-xs text-muted-foreground">
+              {data.monthTransactionCount} transactions this month
+            </p>
           </div>
         </div>
         {data.topGoal && (
@@ -111,7 +113,7 @@ export default function DashboardPage() {
             ) : (
               <CategoryChart
                 categories={data.categories}
-                transactions={data.thisMonthTransactions}
+                breakdown={data.categoryBreakdown}
                 monthLabel={formatMonthYear(data.month)}
               />
             )}

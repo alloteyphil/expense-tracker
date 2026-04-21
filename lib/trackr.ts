@@ -1,7 +1,7 @@
 import type { QuickFilters, Transaction } from "@/lib/types";
 
 export function monthKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 export function toDateString(timestamp: number) {

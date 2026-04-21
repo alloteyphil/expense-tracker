@@ -142,13 +142,13 @@ export function TransactionsList({
                 <EmptyTitle>No transactions found</EmptyTitle>
                 <EmptyDescription>
                   {transactions.length === 0
-                    ? "Start by recording your first income or expense."
-                    : "Try adjusting your filters or search terms."}
+                    ? "You have no records yet. Add your first income or expense to start tracking."
+                    : "No rows match these filters yet. Adjust filters or clear search to see more transactions."}
                 </EmptyDescription>
               </EmptyHeader>
               {transactions.length === 0 && onAddFirst && (
                 <EmptyContent>
-                  <Button onClick={onAddFirst}>Add transaction</Button>
+                  <Button onClick={onAddFirst}>Add your first transaction</Button>
                 </EmptyContent>
               )}
             </Empty>

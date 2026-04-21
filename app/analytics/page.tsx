@@ -30,7 +30,7 @@ export default function AnalyticsPage() {
         ) : (
           <CategoryChart
             categories={data.categories}
-            transactions={data.thisMonthTransactions}
+            breakdown={data.categoryBreakdown}
             monthLabel={formatMonthYear(data.month)}
           />
         )}
