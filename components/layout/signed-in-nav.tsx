@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SignOutButton, useAuth, useUser } from "@clerk/nextjs";
+import { useAuth, useClerk, useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { Moon, Settings, Sun, User } from "lucide-react";
 import { api } from "@/convex/_generated/api";
@@ -41,6 +41,7 @@ function initialsFor(name: string) {
 export function SignedInNav() {
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useAuth();
+  const clerk = useClerk();
   const { user } = useUser();
   const canQuery = isLoaded && isSignedIn;
   const appUser = useQuery(api.users.me, canQuery ? {} : "skip");
@@ -145,12 +146,12 @@ export function SignedInNav() {
             Dark theme
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <SignOutButton fallbackRedirectUrl="/">
-              <button type="button" className="w-full text-left">
-                Sign out
-              </button>
-            </SignOutButton>
+          <DropdownMenuItem
+            onClick={async () => {
+              await clerk.signOut({ redirectUrl: "/" });
+            }}
+          >
+            Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
